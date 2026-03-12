@@ -1,0 +1,74 @@
+# =============================================================================
+# Splunk SPL Queries — Cyber Security Dashboard
+# Author: Lucas Camargo
+# Dataset: Kaggle Cyber Security Attacks (index=security)
+#
+# NOTE: Lines beginning with '#' are documentation comments for readability.
+# They are NOT valid SPL syntax and must not be pasted into the Splunk
+# search bar. Copy only the SPL lines (those that begin with 'index=' or '|').
+#
+# HOW TO USE:
+#   1. Open Splunk → Search & Reporting
+#   2. Copy ONLY the SPL lines for the panel you want (no # lines)
+#   3. Paste into the search bar and run
+# =============================================================================
+
+
+# ── Panel 1: Firewall Policy Audit — High Severity Not Blocked ───────────────
+# Purpose : Reveals the critical misconfiguration — High-severity attacks
+#           that were Ignored instead of Blocked by the firewall
+# Source  : index=security sourcetype=cyber_attack (Kaggle dataset via HEC)
+# Fields  : "Severity Level" and "Action Taken" are native Kaggle columns
+#           Action Taken values: Blocked, Ignored, Logged
+# Chart   : Column chart grouped by Severity Level and Action Taken
+
+index=security sourcetype=cyber_attack
+| stats count by "Severity Level" "Action Taken"
+| sort - count
+
+
+# ── Panel 2: Monthly Attack Trend ────────────────────────────────────────────
+# Purpose : Confirms persistent attack landscape month over month
+# Source  : index=security sourcetype=cyber_attack (Kaggle dataset via HEC)
+# Fields  : "Attack Type" is a native Kaggle column (use quotes — contains space)
+# Chart   : Column chart (Attack Type volume over time)
+
+index=security sourcetype=cyber_attack
+| timechart span=1mon count by "Attack Type"
+
+
+# ── Panel 3: Top 50 Highest-Risk Anomalies ───────────────────────────────────
+# Purpose : Surfaces the 50 events with the highest anomaly scores
+# Source  : index=security sourcetype=cyber_attack (Kaggle dataset via HEC)
+# Fields  : "Anomaly Scores" contains a space — double-quote notation works in
+#           both | sort and | table for fields with spaces
+# Chart   : Statistics table (sorted by Anomaly Scores descending)
+# Order   : table first restricts columns, sort orders by score, head limits to 50
+
+index=security sourcetype=cyber_attack
+| table _time "Attack Type" "Severity Level" "Source IP Address" "Destination IP Address" "Anomaly Scores"
+| sort -"Anomaly Scores"
+| head 50
+
+
+# ── Data Cleaning Example ─────────────────────────────────────────────────────
+# Purpose : Demonstrates null filtering and field selection on the Kaggle dataset
+# where   : drops records where Severity Level is missing or empty
+# fields  : removes all columns except the ones needed for analysis
+
+index=security sourcetype=cyber_attack
+| where isnotnull('Severity Level') AND 'Severity Level'!=""
+| fields _time "Source IP Address" "Destination IP Address" "Attack Type" "Severity Level" "Anomaly Scores"
+
+# ── Automated Alert — High-Severity Attack Spike ─────────────────────────────
+# Purpose : Alert trigger query — fires when High/Critical severity events
+#           exceed threshold in a 10-minute window
+# Use in  : Splunk Alerts (not a dashboard panel)
+# Schedule: Run every 10 minutes
+# Trigger : When high_severity_count > 50 (indicates active sustained attack)
+
+index=security sourcetype=cyber_attack earliest=-10m
+| where 'Severity Level'=="High" OR 'Severity Level'=="Critical"
+| stats count as high_severity_count
+| where high_severity_count > 50
+
