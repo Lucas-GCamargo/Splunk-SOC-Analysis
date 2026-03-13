@@ -1,0 +1,32 @@
+# Splunk credentials — NEVER commit your HEC token
+.env
+*.env
+splunk_token.txt
+hec_token.txt
+
+# Ingestion state and logs
+.ingest_state.json
+ingest.log
+*.log
+
+# Data files (Download directly from Kaggle link in README)
+*.csv
+security_events.csv
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# macOS metadata
+.DS_Store
+
+# Windows metadata
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
