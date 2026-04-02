@@ -313,10 +313,10 @@ Ranking events by Anomaly Scores and focusing on the top 50 demonstrated the pra
 
 ## 🤝 Let's Connect
 
-I am a cybersecurity analyst with hands-on experience in SIEM analysis, threat detection, and security automation.
+I am a cybersecurity analyst building a strong technical foundation in SIEM analysis, threat detection, and security automation.
 
 - 📧 [lucascamargo@outlook.com.au](mailto:lucascamargo@outlook.com.au)
-- 🔗 [linkedin.com/in/lucas-camargo-614307139](https://www.linkedin.com/in/lucas-camargo-614307139/)
+- 🔗 [linkedin.com/in/lucasgcamargo](https://www.linkedin.com/in/lucasgcamargo)
 
 ---
 
